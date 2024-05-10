@@ -31,13 +31,6 @@ def read_and_combine_files(stopword_folder_path):
 
 stop_word = read_and_combine_files(stopword_folder_path)
 
-# print(a1)
-
-
-# Analysis_1 = remove_stopwords(text, stop_word)
-#
-#
-#
 positive_dict_path = "C:/Users/jatin/coding_stuff/Black_Cuffer_assignment/20211030 Test Assignment/MasterDictionary/positive-words.txt"
 negative_dict_path = "C:/Users/jatin/coding_stuff/Black_Cuffer_assignment/20211030 Test Assignment/MasterDictionary/negative-words.txt"
 with open(positive_dict_path, "r") as f:
