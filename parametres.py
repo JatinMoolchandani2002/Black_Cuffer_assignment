@@ -3,20 +3,12 @@ import nltk
 import string
 import re
 import pyphen
-
 nltk.download('punkt')
 from nltk.corpus import stopwords
-
 nltk.download('stopwords')
-
-# text_file_path = "C:/Users/jatin/coding_stuff/Black_Cuffer_assignment/article_texts/blackassign0001.txt"
-# with open(text_file_path, 'r') as f:
-#     text = f.read()
 
 stopword_folder_path = "C:/Users/jatin/coding_stuff/Black_Cuffer_assignment/20211030 Test Assignment/StopWords"
 
-
-# print(text)
 def read_and_combine_files(stopword_folder_path):
     combined_text = ""
     for filename in os.listdir(stopword_folder_path):
@@ -24,15 +16,14 @@ def read_and_combine_files(stopword_folder_path):
             filepath = os.path.join(stopword_folder_path, filename)
             with open(filepath, 'r') as f:
                 file_text = f.read()
-                combined_text += file_text + ", "  # Add comma as a separator
+                combined_text += file_text + ", "
 
-    return combined_text[:-2]  # Remove the last comma and space
+    return combined_text[:-2]
 
+given_stop_word = read_and_combine_files(stopword_folder_path)
+positive_dict_path = "C:/Users/jatin/coding_stuff/Black_Cuffer_assignment/MasterDictionary/positive-words.txt"
+negative_dict_path = "C:/Users/jatin/coding_stuff/Black_Cuffer_assignment/MasterDictionary/negative-words.txt"
 
-stop_word = read_and_combine_files(stopword_folder_path)
-
-positive_dict_path = "C:/Users/jatin/coding_stuff/Black_Cuffer_assignment/20211030 Test Assignment/MasterDictionary/positive-words.txt"
-negative_dict_path = "C:/Users/jatin/coding_stuff/Black_Cuffer_assignment/20211030 Test Assignment/MasterDictionary/negative-words.txt"
 with open(positive_dict_path, "r") as f:
     positive_words = f.read().splitlines()
 
@@ -42,10 +33,9 @@ with open(negative_dict_path, "r") as f:
 positive_dict = {word: 'positive' for word in positive_words}
 negative_dict = {word: 'negative' for word in negative_words}
 
-
-def calculate_sentiment_scores(text, positive_dict, negative_dict, stop_words):
+def calculate_sentiment_scores(text, positive_dict, negative_dict, given_stop_word):
     tokens = nltk.word_tokenize(text)  # Tokenize the input text
-    filtered_words = [word for word in tokens if word.lower() not in stop_words]
+    filtered_words = [word for word in tokens if word.lower() not in given_stop_word]
 
     positive_score = sum(1 for word in filtered_words if word in positive_dict)
     negative_score = sum(-1 for word in filtered_words if word in negative_dict)
@@ -69,15 +59,13 @@ def calculate_readability(text):
         fog_index = 0.4 * (avg_sentence_length + float(percentage_of_complex_words))
 
         return avg_sentence_length, percentage_of_complex_words, fog_index, complex_words
-
     except ZeroDivisionError:
         print("Error: Cannot calculate readability for empty text.")
-        return None  # Or any other default values you deem appropriate
-
+        return None
 
 def word_count_without_stop_words(text):
     stop_words = set(stopwords.words('english'))
-    translator = str.maketrans('', '', string.punctuation)  # Remove punctuation
+    translator = str.maketrans('', '', string.punctuation)
     tokens = nltk.word_tokenize(text)
     cleaned_words = [word.translate(translator).lower() for word in tokens if
                      word.translate(translator).lower() not in stop_words]
@@ -87,64 +75,33 @@ def word_count_without_stop_words(text):
 def syllabel_count_per_word(text):
     tokens = nltk.word_tokenize(text)
     vowels = "aeiouy"
-
-    for word in tokens:  # Iterate over each word
-        count = 0  # Initialize the count for each word
-
+    for word in tokens:
+        count = 0
         if word.endswith("es") or word.endswith("ed"):
-            # Check for "es" and "ed", but don't count if preceding part has no vowel
             if not any(vowel in word[:-2] for vowel in vowels):
                 return count
-
         if word[-1] == "e":
             word = word[:-1]
-
         for index, char in enumerate(word):
             if char in vowels and (index == 0 or word[index - 1] not in vowels):
                 count += 1
-
         return count
 
 
 def personal_pronouns(text):
     pronoun_pattern = r"\b(i|we|my|ours|us)\b(?!\s*US)"
     matches = re.findall(pronoun_pattern, text, flags=re.IGNORECASE)
-
     return len(matches)
 
 
 def average_word_length(text):
     try:
-        words = text.split()  # Split the text into a list of words
-        total_characters = sum(len(word) for word in words)  # Count the total characters
-        total_words = len(words)  # Count the number of words
-
+        words = text.split()
+        total_characters = sum(len(word) for word in words)
+        total_words = len(words)
         awl = total_characters / total_words
         return awl
     except ZeroDivisionError:
         print("Error: Cannot calculate readability for empty text.")
         return None
 
-# analysis_1 = calculate_sentiment_scores(text, positive_dict, negative_dict, stop_word)
-# analysis_2 = calculate_readability(text)
-# analysis_3 = word_count_without_stop_words(text)
-# analysis_5 = syllabel_count_per_word(text)
-# analysis_6 = personal_pronouns(text)
-# analysis_7 = average_word_length(text)
-
-# new_row = {
-#     "positive_score": analysis_1[0],
-#     "negative_score": analysis_1[1],
-#     "polarity_score": analysis_1[2],
-#     "subjectivity_score": analysis_1[3],
-#     # ... add other results here
-# }
-#
-# df = df.append(new_row, ignore_index=True)
-# df.to_excel("output_1.xlsx", index=False)
-
-# text_folder = "C:/Users/jatin/coding_stuff/Black_Cuffer_assignment/article_texts"
-# results = process_multiple_texts(text_folder, positive_dict, negative_dict)
-
-# df = pd.DataFrame(results, columns=["Filename", "Positive Score", "Negative Score", "Polarity Score"])
-# df.to_excel("test123.xlsx", index=False)
